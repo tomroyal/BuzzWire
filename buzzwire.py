@@ -3,6 +3,7 @@ import board
 import digitalio
 from digitalio import DigitalInOut, Direction, Pull
 import neopixel
+from adafruit_ht16k33.segments import Seg7x4
 
 # buzz wire circuit runs between D12 and ground
 
@@ -20,14 +21,27 @@ RedButton.pull = Pull.UP
 
 pixels = neopixel.NeoPixel(board.NEOPIXEL, 1)
 
+# config 7 seg display
+
+i2c = board.I2C()
+display = Seg7x4(i2c)
+display.brightness = 0.5
+
+# init game controller
+
 inGame = False
 
 pixels[0] = (10, 0, 0)
+
+def formatTime(counter):
+    oneDp = ("{:43.1f}".format(counter))
+    return oneDp
 
 def waitForBuzz(tvalue,initTvalue): 
     pressedYet = False;
     while pressedYet is False:
         # print(tvalue-initTvalue)
+        display.print(formatTime(tvalue-initTvalue))
         time.sleep(0.1)
         tvalue = tvalue + 0.1
         pressed = BuzzerWire.value
